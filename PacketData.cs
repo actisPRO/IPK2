@@ -30,7 +30,7 @@ public record PacketData
         if (SourcePort != null)
             result += $"src port: {SourcePort}\n";
         if (DestinationPort != null)
-            result += $"dest port: {DestinationPort}\n\n";
+            result += $"dest port: {DestinationPort}\n";
 
         result += FormatBytes() + "\n";
 
