@@ -9,4 +9,6 @@ public struct Settings
     public bool ICMP;
     public bool ARP;
     public int Count;
+    
+    public bool Failed;
 }
