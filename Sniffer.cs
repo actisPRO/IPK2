@@ -17,9 +17,33 @@ public class Sniffer
                      throw new InvalidOperationException();
     }
 
+    private string BuildFilter()
+    {
+        List<string> filters = new List<string>();
+        if (Settings.ARP)
+            filters.Add(BuildPortProtocolFilter("ether proto \\arp"));
+        if (Settings.ICMP)
+            filters.Add(BuildPortProtocolFilter("icmp"));
+        if (Settings.TCP)
+            filters.Add(BuildPortProtocolFilter("tcp"));
+        if (Settings.UDP)
+            filters.Add(BuildPortProtocolFilter("udp"));
+
+        return String.Join(" or ", filters);
+    }
+
+    private string BuildPortProtocolFilter(string protocol)
+    {
+        if (Settings.Port <= 0 || Settings.Port >= 65535)
+            return protocol;
+        else
+            return $"port {Settings.Port} and {protocol}";
+    }
+
     public void StartCapture()
     {
         _interface.Open();
+        _interface.Filter = BuildFilter();
         _interface.OnPacketArrival += InterfaceOnOnPacketArrival;
         _interface.StartCapture();
     }
@@ -32,32 +56,6 @@ public class Sniffer
 
     private void InterfaceOnOnPacketArrival(object sender, PacketCapture e)
     {
-        var rawCapture = e.GetPacket();
-        if (rawCapture.LinkLayerType != LinkLayers.Ethernet)
-            return;
-        var packet = (EthernetPacket) rawCapture.GetPacket();
-
-        if (packet.Type == EthernetType.Arp && Settings.ARP)
-        {
-            PrintArpData((ArpPacket) rawCapture.GetPacket());
-        }
-        else if (packet.Type == EthernetType.IPv4)
-        {
-            var ipv4 = (IPv4Packet) rawCapture.GetPacket();
-            if (ipv4.Protocol == ProtocolType.Icmp && !Settings.ICMP)
-                PrintIcmpData((IcmpV4Packet) rawCapture.GetPacket());
-            else if (ipv4.Protocol == ProtocolType.Udp && !Settings.UDP)
-                PrintUdpData((UdpPacket) rawCapture.GetPacket());
-            else if (ipv4.Protocol == ProtocolType.Tcp && !Settings.TCP)
-                PrintTcpData((TcpPacket) rawCapture.GetPacket());
-            else
-                return;
-        }
-        else
-        {
-            return;
-        }
-        
         _packetsCatched += 1;
         if (_packetsCatched >= Settings.NumberOfPackets)
             StopCapture();
@@ -78,8 +76,11 @@ public class Sniffer
         
     }
 
-    private void PrintTcpData(TcpPacket packet)
+    private PacketData ReadTcpData(TcpPacket packet)
     {
-        
+        return new PacketData
+        {
+            
+        };
     }
 }
