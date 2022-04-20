@@ -66,6 +66,7 @@ public class Sniffer
 
         data = TryReadTransportData(packet, data);
         data = TryReadIcmpData(packet, data);
+        data = TryReadArpData(packet, data);
         
         Console.WriteLine(data);
 
@@ -121,6 +122,28 @@ public class Sniffer
                 DestinationAddress = ipPacket.DestinationAddress
             };
 
+            return data;
+        }
+
+        return existingData;
+    }
+
+    /// <summary>
+    /// Tries to read the provided packet as an ARP packet
+    /// </summary>
+    /// <returns>Filled PacketData or existingData if not an ARP packet</returns>
+    private PacketData TryReadArpData(Packet packet, PacketData existingData)
+    {
+        var arpPacket = packet.Extract<ArpPacket>();
+        if (arpPacket != null)
+        {
+            var data = existingData with
+            {
+                Source = arpPacket.SenderHardwareAddress,
+                Destination = arpPacket.TargetHardwareAddress,
+                SourceAddress = arpPacket.SenderProtocolAddress,
+                DestinationAddress = arpPacket.TargetProtocolAddress
+            };
             return data;
         }
 
