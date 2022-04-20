@@ -56,31 +56,40 @@ public class Sniffer
 
     private void InterfaceOnOnPacketArrival(object sender, PacketCapture e)
     {
+        var rawPacket = e.GetPacket();
+        var data = new PacketData
+        {
+            Timestamp = rawPacket.Timeval.Date,
+            FrameLength = rawPacket.PacketLength
+        };
+        var packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
+
+        var tcpPacket = packet.Extract<TcpPacket>();
+        if (tcpPacket != null)
+        {
+            var ethPacket = packet.Extract<EthernetPacket>();
+            data.Source = ethPacket.SourceHardwareAddress;
+            data.Destination = ethPacket.DestinationHardwareAddress;
+            
+            data = ReadTcpData(tcpPacket, data);
+        }
+
         _packetsCatched += 1;
         if (_packetsCatched >= Settings.NumberOfPackets)
             StopCapture();
     }
 
-    private void PrintArpData(ArpPacket packet)
+    private PacketData ReadTcpData(TcpPacket packet, PacketData existingData)
     {
-        
-    }
+        var ipPacket = (IPPacket) packet.ParentPacket;
 
-    private void PrintIcmpData(IcmpV4Packet packet)
-    {
-        
-    }
-
-    private void PrintUdpData(UdpPacket packet)
-    {
-        
-    }
-
-    private PacketData ReadTcpData(TcpPacket packet)
-    {
-        return new PacketData
+        var data = existingData with
         {
-            
+            SourceAddress = ipPacket.SourceAddress,
+            DestinationAddress = ipPacket.DestinationAddress,
+            SourcePort = packet.SourcePort,
+            DestinationPort = packet.DestinationPort
         };
+        return data;
     }
 }
