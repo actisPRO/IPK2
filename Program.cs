@@ -19,6 +19,7 @@ class Program
         try
         {
             var sniffer = new Sniffer(settings);
+            sniffer.StartCapture();
         }
         catch (InvalidOperationException)
         {
@@ -57,7 +58,7 @@ class Program
                         settings.ARP = true;
                     else if (argName is "n" && i + 1 < args.Length)
                     {
-                        settings.Count = Convert.ToInt32(args[i + 1]);
+                        settings.NumberOfPackets = Convert.ToInt32(args[i + 1]);
                         i += 1;
                     }
                 }
@@ -71,8 +72,8 @@ class Program
         }
 
         // Set-up default values
-        if (settings.Count == default)
-            settings.Count = 1;
+        if (settings.NumberOfPackets == default)
+            settings.NumberOfPackets = 1;
 
         if (!settings.TCP && !settings.UDP && !settings.ICMP && !settings.ARP)
         {
@@ -91,6 +92,6 @@ class Program
         var devices = CaptureDeviceList.Instance;
         
         foreach (var dev in devices)
-            Console.WriteLine(dev.Name);
+            Console.WriteLine(dev);
     }
 }

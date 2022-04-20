@@ -8,7 +8,7 @@ public struct Settings
     public bool UDP;
     public bool ICMP;
     public bool ARP;
-    public int Count;
+    public int NumberOfPackets;
     
     public bool Failed;
 }
