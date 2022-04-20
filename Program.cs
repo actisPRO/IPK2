@@ -92,6 +92,6 @@ class Program
         var devices = CaptureDeviceList.Instance;
         
         foreach (var dev in devices)
-            Console.WriteLine(dev);
+            Console.WriteLine(dev.Name);
     }
 }
