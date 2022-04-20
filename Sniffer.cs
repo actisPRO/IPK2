@@ -73,6 +73,8 @@ public class Sniffer
             
             data = ReadTcpData(tcpPacket, data);
         }
+        
+        Console.WriteLine(data);
 
         _packetsCatched += 1;
         if (_packetsCatched >= Settings.NumberOfPackets)
