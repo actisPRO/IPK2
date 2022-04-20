@@ -64,15 +64,7 @@ public class Sniffer
         };
         var packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
 
-        var tcpPacket = packet.Extract<TransportPacket>();
-        if (tcpPacket != null)
-        {
-            var ethPacket = packet.Extract<EthernetPacket>();
-            data.Source = ethPacket.SourceHardwareAddress;
-            data.Destination = ethPacket.DestinationHardwareAddress;
-            
-            data = ReadTcpUdpData(tcpPacket, data);
-        }
+        data = TryReadTransportData(packet, data);
         
         Console.WriteLine(data);
 
@@ -81,17 +73,26 @@ public class Sniffer
             StopCapture();
     }
 
-    private PacketData ReadTcpUdpData(TransportPacket packet, PacketData existingData)
+    private PacketData TryReadTransportData(Packet packet, PacketData existingData)
     {
-        var ipPacket = (IPPacket) packet.ParentPacket;
-
-        var data = existingData with
+        var transportPacket = packet.Extract<TransportPacket>();
+        if (transportPacket != null)
         {
-            SourceAddress = ipPacket.SourceAddress,
-            DestinationAddress = ipPacket.DestinationAddress,
-            SourcePort = packet.SourcePort,
-            DestinationPort = packet.DestinationPort
-        };
-        return data;
+            var ethPacket = packet.Extract<EthernetPacket>();
+            var ipPacket = (IPPacket) transportPacket.ParentPacket;
+
+            var data = existingData with
+            {
+                Source = ethPacket.SourceHardwareAddress,
+                Destination = ethPacket.DestinationHardwareAddress,
+                SourceAddress = ipPacket.SourceAddress,
+                DestinationAddress = ipPacket.DestinationAddress,
+                SourcePort = transportPacket.SourcePort,
+                DestinationPort = transportPacket.DestinationPort
+            };
+            return data;
+        }
+        
+        return existingData;
     }
 }
