@@ -26,6 +26,10 @@ class Program
             Console.Error.WriteLine($"Unknown interface: {settings.Interface}.\n" +
                                     "Use -i argument without value to get a list of available interfaces.");
         }
+        catch (PcapException)
+        {
+            Console.Error.WriteLine("Can't activate the adapter. Try running application with admin rights.");
+        }
     }
 
     static Settings ParseArgs(string[] args)
