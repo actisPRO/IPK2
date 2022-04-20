@@ -42,7 +42,7 @@ public class Sniffer
 
     public void StartCapture()
     {
-        _interface.Open();
+        _interface.Open(DeviceModes.Promiscuous);
         _interface.Filter = BuildFilter();
         _interface.OnPacketArrival += InterfaceOnOnPacketArrival;
         _interface.StartCapture();
@@ -65,6 +65,7 @@ public class Sniffer
         var packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
 
         data = TryReadTransportData(packet, data);
+        data = TryReadIcmpData(packet, data);
         
         Console.WriteLine(data);
 
@@ -72,7 +73,11 @@ public class Sniffer
         if (_packetsCatched >= Settings.NumberOfPackets)
             StopCapture();
     }
-
+    
+    /// <summary>
+    /// Tries to read the provided packet as a transport packet.
+    /// </summary>
+    /// <returns>Filled PacketData or existingData if not a transport packet</returns>
     private PacketData TryReadTransportData(Packet packet, PacketData existingData)
     {
         var transportPacket = packet.Extract<TransportPacket>();
@@ -93,6 +98,32 @@ public class Sniffer
             return data;
         }
         
+        return existingData;
+    }
+
+    /// <summary>
+    /// Tries to read the provided packet as an ICMP packet
+    /// </summary>
+    /// <returns>Filled PacketData or existingData if not an ICMP packet</returns>
+    private PacketData TryReadIcmpData(Packet packet, PacketData existingData)
+    {
+        var icmp4Packet = packet.Extract<IcmpV4Packet>();
+        var icmp6Packet = packet.Extract<IcmpV6Packet>();
+        if (icmp4Packet != null || icmp6Packet != null)
+        {
+            var ipPacket = packet.Extract<IPPacket>();
+            var ethPacket = packet.Extract<EthernetPacket>();
+            var data = existingData with
+            {
+                Source = ethPacket.SourceHardwareAddress,
+                Destination = ethPacket.DestinationHardwareAddress,
+                SourceAddress = ipPacket.SourceAddress,
+                DestinationAddress = ipPacket.DestinationAddress
+            };
+
+            return data;
+        }
+
         return existingData;
     }
 }
