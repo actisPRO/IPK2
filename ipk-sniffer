@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/bin/dotnet bin/Release/net6.0/IPK2.Zeta.dll "$@"

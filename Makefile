@@ -1,2 +1,2 @@
 ﻿all:
-	dotnet build --configuration Release
+	/usr/bin/dotnet build --configuration Release
