@@ -73,6 +73,16 @@ public class Sniffer
             
             data = ReadTcpData(tcpPacket, data);
         }
+
+        var udpPacket = packet.Extract<UdpPacket>();
+        if (udpPacket != null)
+        {
+            var ethPacket = packet.Extract<EthernetPacket>();
+            data.Source = ethPacket.SourceHardwareAddress;
+            data.Destination = ethPacket.DestinationHardwareAddress;
+            
+            data = ReadUdpData(udpPacket, data);
+        }
         
         Console.WriteLine(data);
 
@@ -82,6 +92,20 @@ public class Sniffer
     }
 
     private PacketData ReadTcpData(TcpPacket packet, PacketData existingData)
+    {
+        var ipPacket = (IPPacket) packet.ParentPacket;
+
+        var data = existingData with
+        {
+            SourceAddress = ipPacket.SourceAddress,
+            DestinationAddress = ipPacket.DestinationAddress,
+            SourcePort = packet.SourcePort,
+            DestinationPort = packet.DestinationPort
+        };
+        return data;
+    }
+
+    private PacketData ReadUdpData(UdpPacket packet, PacketData existingData)
     {
         var ipPacket = (IPPacket) packet.ParentPacket;
 
