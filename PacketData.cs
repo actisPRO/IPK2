@@ -6,14 +6,14 @@ namespace IPK2.Zeta;
 public record PacketData
 {
     public DateTime Timestamp { get; set; }
-    public PhysicalAddress Source { get; set; }
-    public PhysicalAddress Destination { get; set; }
+    public PhysicalAddress Source { get; set; } = null!;
+    public PhysicalAddress Destination { get; set; } = null!;
     public int FrameLength { get; set; }
     public IPAddress? SourceAddress { get; set; }
     public IPAddress? DestinationAddress { get; set; }
     public int? SourcePort { get; set; }
     public int? DestinationPort { get; set; }
-    public byte[] Bytes { get; set; }
+    public byte[] Bytes { get; set; } = null!;
 
     public override string ToString()
     {
