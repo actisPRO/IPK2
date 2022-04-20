@@ -37,12 +37,18 @@ public record PacketData
         return result;
     }
 
+    /// <summary>
+    /// Converts PhysicalAddress to a ':' separated string.
+    /// </summary>
     private string FormatMac(PhysicalAddress mac)
     {
         string[] macParts = (from part in mac.GetAddressBytes() select part.ToString("X2")).ToArray();
         return String.Join(":", macParts);   
     }
 
+    /// <summary>
+    /// Formats packet bytes: 16 bytes per line, offset, hex and char values
+    /// </summary>
     private string FormatBytes()
     {
         string result = "";
@@ -72,6 +78,10 @@ public record PacketData
         return result;
     }
 
+    /// <summary>
+    /// Converts byte to char
+    /// </summary>
+    /// <returns>Char representation of the specified byte or '.' if byte is lower than 32</returns>
     private char ByteToChar(byte b)
     {
         if (b < 32)

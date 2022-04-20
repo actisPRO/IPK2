@@ -17,6 +17,9 @@ public class Sniffer
                      throw new InvalidOperationException();
     }
 
+    /// <summary>
+    /// Builds a Berkley Packet Filter (based on setting parameter)
+    /// </summary>
     private string BuildFilter()
     {
         List<string> filters = new List<string>();
@@ -32,6 +35,9 @@ public class Sniffer
         return String.Join(" or ", filters);
     }
 
+    /// <summary>
+    /// Builds an AND part of BPF
+    /// </summary>
     private string BuildPortProtocolFilter(string protocol)
     {
         if (Settings.Port <= 0 || Settings.Port >= 65535)
