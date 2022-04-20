@@ -5,9 +5,9 @@ namespace IPK2.Zeta;
 
 public class Sniffer
 {
-    public readonly Settings Settings;
     private readonly ILiveDevice _interface;
-    private int _packetsCatched = 0;
+    public readonly Settings Settings;
+    private int _packetsCatched;
 
     public Sniffer(Settings settings)
     {
@@ -18,11 +18,11 @@ public class Sniffer
     }
 
     /// <summary>
-    /// Builds a Berkley Packet Filter (based on setting parameter)
+    ///     Builds a Berkley Packet Filter (based on setting parameter)
     /// </summary>
     private string BuildFilter()
     {
-        List<string> filters = new List<string>();
+        var filters = new List<string>();
         if (Settings.ARP)
             filters.Add(BuildPortProtocolFilter("ether proto \\arp"));
         if (Settings.ICMP)
@@ -32,18 +32,17 @@ public class Sniffer
         if (Settings.UDP)
             filters.Add(BuildPortProtocolFilter("udp"));
 
-        return String.Join(" or ", filters);
+        return string.Join(" or ", filters);
     }
 
     /// <summary>
-    /// Builds an AND part of BPF
+    ///     Builds an AND part of BPF
     /// </summary>
     private string BuildPortProtocolFilter(string protocol)
     {
         if (Settings.Port <= 0 || Settings.Port >= 65535)
             return protocol;
-        else
-            return $"port {Settings.Port} and {protocol}";
+        return $"port {Settings.Port} and {protocol}";
     }
 
     public void StartCapture()
@@ -73,16 +72,16 @@ public class Sniffer
         data = TryReadTransportData(packet, data);
         data = TryReadIcmpData(packet, data);
         data = TryReadArpData(packet, data);
-        
+
         Console.WriteLine(data);
 
         _packetsCatched += 1;
         if (_packetsCatched >= Settings.NumberOfPackets)
             StopCapture();
     }
-    
+
     /// <summary>
-    /// Tries to read the provided packet as a transport packet.
+    ///     Tries to read the provided packet as a transport packet.
     /// </summary>
     /// <returns>Filled PacketData or existingData if not a transport packet</returns>
     private PacketData TryReadTransportData(Packet packet, PacketData existingData)
@@ -106,12 +105,12 @@ public class Sniffer
 
             return data;
         }
-        
+
         return existingData;
     }
 
     /// <summary>
-    /// Tries to read the provided packet as an ICMP packet
+    ///     Tries to read the provided packet as an ICMP packet
     /// </summary>
     /// <returns>Filled PacketData or existingData if not an ICMP packet</returns>
     private PacketData TryReadIcmpData(Packet packet, PacketData existingData)
@@ -138,7 +137,7 @@ public class Sniffer
     }
 
     /// <summary>
-    /// Tries to read the provided packet as an ARP packet
+    ///     Tries to read the provided packet as an ARP packet
     /// </summary>
     /// <returns>Filled PacketData or existingData if not an ARP packet</returns>
     private PacketData TryReadArpData(Packet packet, PacketData existingData)

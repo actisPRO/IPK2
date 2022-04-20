@@ -17,7 +17,7 @@ public record PacketData
 
     public override string ToString()
     {
-        string result = "";
+        var result = "";
 
         result += $"timestamp: {Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffffK")}\n";
         result += $"src MAC: {FormatMac(Source)}\n";
@@ -38,55 +38,55 @@ public record PacketData
     }
 
     /// <summary>
-    /// Converts PhysicalAddress to a ':' separated string.
+    ///     Converts PhysicalAddress to a ':' separated string.
     /// </summary>
     private string FormatMac(PhysicalAddress mac)
     {
-        string[] macParts = (from part in mac.GetAddressBytes() select part.ToString("X2")).ToArray();
-        return String.Join(":", macParts);   
+        var macParts = (from part in mac.GetAddressBytes() select part.ToString("X2")).ToArray();
+        return string.Join(":", macParts);
     }
 
     /// <summary>
-    /// Formats packet bytes: 16 bytes per line, offset, hex and char values
+    ///     Formats packet bytes: 16 bytes per line, offset, hex and char values
     /// </summary>
     private string FormatBytes()
     {
-        string result = "";
+        var result = "";
         var hexes = new List<string>();
         var chars = new List<char>();
 
-        int offset = 0;
-        for (int currentByte = 0; currentByte < Bytes.Length; ++currentByte)
+        var offset = 0;
+        for (var currentByte = 0; currentByte < Bytes.Length; ++currentByte)
         {
             if (currentByte != 0 && currentByte % 16 == 0)
             {
-                result += $"0x{offset:X4}: {String.Join(' ', hexes)} {String.Join(' ', chars)}\n";
+                result += $"0x{offset:X4}: {string.Join(' ', hexes)} {string.Join(' ', chars)}\n";
                 hexes.Clear();
                 chars.Clear();
             }
 
             hexes.Add(Bytes[currentByte].ToString("X2"));
             chars.Add(ByteToChar(Bytes[currentByte]));
-            
+
             if (currentByte % 16 == 0)
                 offset = currentByte;
         }
 
         if (hexes.Any())
-            result += $"0x{offset:X4}: {String.Join(' ', hexes)} {String.Join(' ', chars)}\n";
+            result += $"0x{offset:X4}: {string.Join(' ', hexes)} {string.Join(' ', chars)}\n";
 
         return result;
     }
 
     /// <summary>
-    /// Converts byte to char
+    ///     Converts byte to char
     /// </summary>
     /// <returns>Char representation of the specified byte or '.' if byte is lower than 32</returns>
     private char ByteToChar(byte b)
     {
         if (b < 32)
             return '.';
-        
+
         return (char) b;
     }
 }

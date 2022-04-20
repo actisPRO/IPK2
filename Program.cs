@@ -1,9 +1,8 @@
-﻿using System;
-using SharpPcap;
+﻿using SharpPcap;
 
 namespace IPK2.Zeta;
 
-class Program
+internal class Program
 {
     public static void Main(string[] args)
     {
@@ -32,16 +31,15 @@ class Program
         }
     }
 
-    static Settings ParseArgs(string[] args)
+    private static Settings ParseArgs(string[] args)
     {
         var settings = new Settings();
         try
         {
-            for (int i = 0; i < args.Length; ++i)
-            {
+            for (var i = 0; i < args.Length; ++i)
                 if (args[i].StartsWith('-'))
                 {
-                    string argName = args[i].Replace("-", "");
+                    var argName = args[i].Replace("-", "");
                     if (argName is "i" or "interface" && i + 1 < args.Length && !args[i + 1].StartsWith('-'))
                     {
                         settings.Interface = args[i + 1];
@@ -53,20 +51,27 @@ class Program
                         i += 1;
                     }
                     else if (argName is "t" or "tcp")
+                    {
                         settings.TCP = true;
+                    }
                     else if (argName is "u" or "udp")
+                    {
                         settings.UDP = true;
+                    }
                     else if (argName is "icmp")
+                    {
                         settings.ICMP = true;
+                    }
                     else if (argName is "arp")
+                    {
                         settings.ARP = true;
+                    }
                     else if (argName is "n" && i + 1 < args.Length)
                     {
                         settings.NumberOfPackets = Convert.ToInt32(args[i + 1]);
                         i += 1;
                     }
                 }
-            }
         }
         catch (InvalidOperationException)
         {
@@ -91,10 +96,10 @@ class Program
         return settings;
     }
 
-    static void PrintInterfaces()
+    private static void PrintInterfaces()
     {
         var devices = CaptureDeviceList.Instance;
-        
+
         foreach (var dev in devices)
             Console.WriteLine(dev.Name);
     }

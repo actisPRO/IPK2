@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SharpPcap" Version="6.1.0" />
+        <PackageReference Include="SharpPcap" Version="6.1.0"/>
     </ItemGroup>
 
 </Project>
