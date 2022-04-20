@@ -15,6 +15,16 @@ class Program
             PrintInterfaces();
             return;
         }
+
+        try
+        {
+            var sniffer = new Sniffer(settings);
+        }
+        catch (InvalidOperationException)
+        {
+            Console.Error.WriteLine($"Unknown interface: {settings.Interface}.\n" +
+                                    "Use -i argument without value to get a list of available interfaces.");
+        }
     }
 
     static Settings ParseArgs(string[] args)
@@ -80,7 +90,6 @@ class Program
     {
         var devices = CaptureDeviceList.Instance;
         
-        Console.WriteLine("Available interfaces:\n");
         foreach (var dev in devices)
             Console.WriteLine(dev.Name);
     }
