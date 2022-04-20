@@ -94,8 +94,10 @@ public class Sniffer
                 SourceAddress = ipPacket.SourceAddress,
                 DestinationAddress = ipPacket.DestinationAddress,
                 SourcePort = transportPacket.SourcePort,
-                DestinationPort = transportPacket.DestinationPort
+                DestinationPort = transportPacket.DestinationPort,
+                Bytes = transportPacket.Bytes
             };
+
             return data;
         }
         
@@ -119,7 +121,8 @@ public class Sniffer
                 Source = ethPacket.SourceHardwareAddress,
                 Destination = ethPacket.DestinationHardwareAddress,
                 SourceAddress = ipPacket.SourceAddress,
-                DestinationAddress = ipPacket.DestinationAddress
+                DestinationAddress = ipPacket.DestinationAddress,
+                Bytes = ipPacket.Bytes
             };
 
             return data;
@@ -142,7 +145,8 @@ public class Sniffer
                 Source = arpPacket.SenderHardwareAddress,
                 Destination = arpPacket.TargetHardwareAddress,
                 SourceAddress = arpPacket.SenderProtocolAddress,
-                DestinationAddress = arpPacket.TargetProtocolAddress
+                DestinationAddress = arpPacket.TargetProtocolAddress,
+                Bytes = arpPacket.Bytes
             };
             return data;
         }

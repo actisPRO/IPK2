@@ -13,6 +13,7 @@ public record PacketData
     public IPAddress? DestinationAddress { get; set; }
     public int? SourcePort { get; set; }
     public int? DestinationPort { get; set; }
+    public byte[] Bytes { get; set; }
 
     public override string ToString()
     {
@@ -31,6 +32,8 @@ public record PacketData
         if (DestinationPort != null)
             result += $"dest port: {DestinationPort}\n\n";
 
+        result += FormatBytes() + "\n";
+
         return result;
     }
 
@@ -38,5 +41,42 @@ public record PacketData
     {
         string[] macParts = (from part in mac.GetAddressBytes() select part.ToString("X2")).ToArray();
         return String.Join(":", macParts);   
+    }
+
+    private string FormatBytes()
+    {
+        string result = "";
+        var hexes = new List<string>();
+        var chars = new List<char>();
+
+        int offset = 0;
+        for (int currentByte = 0; currentByte < Bytes.Length; ++currentByte)
+        {
+            if (currentByte != 0 && currentByte % 16 == 0)
+            {
+                result += $"0x{offset:X4}: {String.Join(' ', hexes)} {String.Join(' ', chars)}\n";
+                hexes.Clear();
+                chars.Clear();
+            }
+
+            hexes.Add(Bytes[currentByte].ToString("X2"));
+            chars.Add(ByteToChar(Bytes[currentByte]));
+            
+            if (currentByte % 16 == 0)
+                offset = currentByte;
+        }
+
+        if (hexes.Any())
+            result += $"0x{offset:X4}: {String.Join(' ', hexes)} {String.Join(' ', chars)}\n";
+
+        return result;
+    }
+
+    private char ByteToChar(byte b)
+    {
+        if (b < 32)
+            return '.';
+        
+        return (char) b;
     }
 }
