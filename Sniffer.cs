@@ -29,7 +29,10 @@ namespace IPK2.Zeta
             if (Settings.ARP)
                 filters.Add(BuildPortProtocolFilter("ether proto \\arp"));
             if (Settings.ICMP)
+            {
                 filters.Add(BuildPortProtocolFilter("icmp"));
+                filters.Add(BuildPortProtocolFilter("icmp6"));
+            }
             if (Settings.TCP)
                 filters.Add(BuildPortProtocolFilter("tcp"));
             if (Settings.UDP)
