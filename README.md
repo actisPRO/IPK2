@@ -50,3 +50,16 @@ dst port: [if exists, destination port]
 
 [HEX byte offset]: [up to 16 HEX byte values] [up to 16 byte ASCII value (or . if unprintable)]
 ```
+
+## Files
+
+* `IPK2.Zeta.csproj` - project file.
+* `IPK2.Zeta.sln` - solution file.
+* `ipk-sniffer` - start-up Shell script.
+* `Makefile`
+* `manual.pdf` - documentation.
+* `PacketData.cs` - class used for storing packet data.
+* `Program.cs` - executable class.
+* `Settings.cs` - structure used for storing settings.
+* `Sniffer.cs`- class used for sniffing packets.
+* `README.md` - short documentation.
